@@ -6,8 +6,8 @@ namespace TicTacToe.Persistence.Contex
 {
     public class GameContex : DbContext
     {
-        DbSet<User> Users { get; set; }
-        DbSet<GameTable> GameTables { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<GameTable> GameTables { get; set; }
 
         public GameContex()
         {
