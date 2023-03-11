@@ -58,12 +58,13 @@ namespace TicTacToe.WebApi.Controllers
                 if (table.Hod < 0)
                 {
                     table.playArea[moveDTO.position] = 1;
+                    table.Hod *= -1;
                     message = $"Inserting X into position {moveDTO.position}";
                 }
-
-                if (table.Hod > 0)
+                else
                 {
                     table.playArea[moveDTO.position] = 0;
+                    table.Hod *= -1;
                     message = $"Inserting O into position {moveDTO.position}";
                 }
 
