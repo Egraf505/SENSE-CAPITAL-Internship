@@ -39,55 +39,71 @@ namespace TicTacToe.WebApi.Controllers
         [HttpPost]     
         public async Task<IActionResult> Move([FromBody] MoveDTO moveDTO)
         {
+            try 
+            { 
+                GameTable table = await _context.GameTables.FirstOrDefaultAsync(table => table.Id == moveDTO.tableId);
 
-            GameTable table = await _context.GameTables.FirstOrDefaultAsync(table => table.Id == moveDTO.tableId);
+                if (table == null)
+                    return NotFound("Table not Found");
 
-            if (table == null)
-                return NotFound("Table not Found");
-
-            if (table.finished)
-                return Forbid("Game is Finished");
+                if (table.finished)
+                    return BadRequest("Game is Finished");
             
-            if (table.playArea[moveDTO.p] != null)
-                return BadRequest("the field is not empty");
+                if (table.playArea[moveDTO.position] != null)
+                    return BadRequest("The field is not empty");
 
-            string message = "";
+                string message = "";
 
-            if (table.Hod < 0)
-            {
-                table.playArea[moveDTO.p] = 1;
-                message = $"Inserting X into position {moveDTO.p}";
-            }
+            
+                if (table.Hod < 0)
+                {
+                    table.playArea[moveDTO.position] = 1;
+                    message = $"Inserting X into position {moveDTO.position}";
+                }
 
-            if (table.Hod > 0)
-            {
-                table.playArea[moveDTO.p] = 0;
-                message = $"Inserting O into position {moveDTO.p}";
-            }
+                if (table.Hod > 0)
+                {
+                    table.playArea[moveDTO.position] = 0;
+                    message = $"Inserting O into position {moveDTO.position}";
+                }
 
-            await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();                      
 
-            switch (CheckOfFinalsGame(table.playArea))
-            {
-                case ResultGameEnum.NotFinished:                   
-                    Console.WriteLine(message);
-                    return StatusCode(210, message);                   
+                ResultGame resultGame = new ResultGame();
 
-                case ResultGameEnum.Draw:
-                    return StatusCode(211, "Draw");
+                switch (CheckOfFinalsGame(table.playArea))
+                {
+                    case ResultGameEnum.NotFinished:
+                        resultGame.resultGame = ResultGameEnum.NotFinished;
+                        resultGame.Message = message;                  
+                        return Ok(resultGame);                   
+
+                    case ResultGameEnum.Draw:
+                        resultGame.resultGame = ResultGameEnum.Draw;
+                        resultGame.Message = "Draw";
+                        FinishGame(table);
+                        return Ok(resultGame);
                     
-                case ResultGameEnum.X:
-                    FinishGame(table);
-                    return StatusCode(212, "X win");
+                    case ResultGameEnum.X:
+                        resultGame.resultGame = ResultGameEnum.X;
+                        resultGame.Message = "X win";
+                        FinishGame(table);
+                        return Ok(resultGame);
                   
+                    case ResultGameEnum.O:
+                        resultGame.resultGame = ResultGameEnum.O;
+                        resultGame.Message = "O win";
+                        FinishGame(table);
+                        return Ok(resultGame);
 
-                case ResultGameEnum.O:
-                    FinishGame(table);
-                    return StatusCode(213, "O win");
-
-                default:
-                    return StatusCode(405, "raw enumeration");
-            }        
+                    default:
+                        return StatusCode(405, "Raw enumeration");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         private void FinishGame(GameTable table)

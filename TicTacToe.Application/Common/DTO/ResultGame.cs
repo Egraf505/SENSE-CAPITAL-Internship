@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TicTacToe.Application.Common.Enums;
 
 namespace TicTacToe.Application.Common.DTO
 {
-    public class MoveDTO
+    public class ResultGame
     {
-        public int tableId { get; set; }
-        public int position { get; set; }
+        public ResultGameEnum resultGame { get; set; }
+        public string Message { get; set; } 
     }
 }
