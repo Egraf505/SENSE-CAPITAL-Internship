@@ -5,8 +5,7 @@ using TicTacToe.Persistence.EntityConfigurations;
 namespace TicTacToe.Persistence.Contex
 {
     public class GameContex : DbContext
-    {
-        public DbSet<User> Users { get; set; }
+   {
         public DbSet<GameTable> GameTables { get; set; }
 
         public GameContex()
@@ -27,8 +26,7 @@ namespace TicTacToe.Persistence.Contex
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.ApplyConfiguration(new GameTableConfiguration());
-            builder.ApplyConfiguration(new UserConfiguration());
+            builder.ApplyConfiguration(new GameTableConfiguration());           
 
             base.OnModelCreating(builder);
         }

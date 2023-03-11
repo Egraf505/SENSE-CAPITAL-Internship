@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TicTacToe.Persistence.Contex;
@@ -11,9 +12,10 @@ using TicTacToe.Persistence.Contex;
 namespace TicTacToe.Persistence.Migrations
 {
     [DbContext(typeof(GameContex))]
-    partial class GameContexModelSnapshot : ModelSnapshot
+    [Migration("20230310200729_AddedMatrix")]
+    partial class AddedMatrix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,15 +32,16 @@ namespace TicTacToe.Persistence.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Hod")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("finished")
                         .HasColumnType("boolean");
 
                     b.Property<int?[]>("playArea")
                         .IsRequired()
                         .HasColumnType("integer[]");
+
+                    b.Property<string>("playerQueue")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
