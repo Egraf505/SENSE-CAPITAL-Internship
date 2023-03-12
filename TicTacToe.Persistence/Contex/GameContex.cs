@@ -21,7 +21,7 @@ namespace TicTacToe.Persistence.Contex
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=Gamesdb;Username=postgres;Password=EfgraF_0256");
+            optionsBuilder.UseNpgsql("connection");
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
