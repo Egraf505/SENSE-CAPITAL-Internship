@@ -2,7 +2,7 @@
 
 ## Endpoints
 
-## ./api/game/startgame
+## Get ./api/game/startgame 
 
 создает стол для игры
 
@@ -16,7 +16,7 @@ StatusCode: 200
 }
 ```
 
-## ./api/game/move
+## POST ./api/game/move
 
 вставляет X или O в зависимости от очереди(первый ходит X)
 
