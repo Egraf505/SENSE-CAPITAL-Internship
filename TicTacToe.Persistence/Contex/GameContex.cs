@@ -10,13 +10,13 @@ namespace TicTacToe.Persistence.Contex
 
         public GameContex()
         {
-
+            Database.EnsureCreated();
         }
 
         public GameContex(DbContextOptions<GameContex> options)
             : base(options)
         {
-
+            Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
