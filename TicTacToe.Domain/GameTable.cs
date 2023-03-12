@@ -10,7 +10,7 @@ namespace TicTacToe.Domain
     {
         public int Id { get; set; }
 
-        public int Hod { get; set; }
+        public bool PlayerHod { get; set; }
 
         public int?[] playArea { get; set; }
 

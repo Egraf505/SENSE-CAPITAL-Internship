@@ -21,19 +21,19 @@ namespace TicTacToe.WebApi.Controllers
             _context = contex;
         }
 
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> StartGame()
         {
            
             GameTable table = new GameTable();
 
             table.playArea = new int?[9];
-            table.Hod = -1;
+            table.PlayerHod = true;
 
             await _context.GameTables.AddAsync(table);
             await _context.SaveChangesAsync();
 
-            return Ok(table.Id);            
+            return Ok(new { TableId = table.Id });            
         }
 
         [HttpPost]     
@@ -44,27 +44,27 @@ namespace TicTacToe.WebApi.Controllers
                 GameTable table = await _context.GameTables.FirstOrDefaultAsync(table => table.Id == moveDTO.tableId);
 
                 if (table == null)
-                    return NotFound("Table not Found");
+                    return NotFound(new { MessageError = "Table not Found" });
 
                 if (table.finished)
-                    return BadRequest("Game is Finished");
+                    return BadRequest(new { MessageError = "Game is Finished" });
             
                 if (table.playArea[moveDTO.position] != null)
-                    return BadRequest("The field is not empty");
+                    return BadRequest(new { MessageError = "The field is not empty" });
 
                 string message = "";
 
             
-                if (table.Hod < 0)
+                if (table.PlayerHod)
                 {
                     table.playArea[moveDTO.position] = 1;
-                    table.Hod *= -1;
+                    table.PlayerHod = !table.PlayerHod;
                     message = $"Inserting X into position {moveDTO.position}";
                 }
                 else
                 {
                     table.playArea[moveDTO.position] = 0;
-                    table.Hod *= -1;
+                    table.PlayerHod = !table.PlayerHod;
                     message = $"Inserting O into position {moveDTO.position}";
                 }
 
@@ -98,12 +98,12 @@ namespace TicTacToe.WebApi.Controllers
                         return Ok(resultGame);
 
                     default:
-                        return StatusCode(405, "Raw enumeration");
+                        return StatusCode(405, new { MessageError = "Raw enumeration" });
                 }
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { MessageError = ex.Message });
             }
         }
 
@@ -115,7 +115,97 @@ namespace TicTacToe.WebApi.Controllers
 
         private ResultGameEnum CheckOfFinalsGame(int?[] matrix)
         {
-            return ResultGameEnum.NotFinished;
+            try
+            {
+                // columns
+
+                for (int i = 0; i < 9; i += 3)
+                {
+                    int? result = matrix[i] + matrix[i + 1] + matrix[i + 2];
+
+                    if (result == 3)
+                    {
+                        return ResultGameEnum.X;
+                    }
+
+                    if (result == 0)
+                    {
+                        return ResultGameEnum.O;
+                    }
+                }
+
+                //rows
+
+                for (int i = 0; i < 3; i++)
+                {
+                    int? result = matrix[i] + matrix[i + 3] + matrix[i + 6];
+
+                    if (result == 3)
+                    {
+                        return ResultGameEnum.X;
+                    }
+
+                    if (result == 0)
+                    {
+                        return ResultGameEnum.O;
+                    }
+                }
+
+                // first diagonal               
+
+                if (matrix[0] + matrix[4] + matrix[8] == 3)
+                {
+                    return ResultGameEnum.X;
+                }
+
+                if (matrix[0] + matrix[4] + matrix[8] == 0)
+                {
+                    return ResultGameEnum.O;
+                }
+
+                // second diagonal          
+
+                if (matrix[0] + matrix[4] + matrix[8] == 3)
+                {
+                    return ResultGameEnum.X;
+                }
+
+                if (matrix[0] + matrix[4] + matrix[8] == 0)
+                {
+                    return ResultGameEnum.O;
+                }
+
+                // Draw
+
+                bool isNotNull = true;
+
+                for (int i = 0; i < 9; i++)
+                {
+                    if (matrix[i] == null)
+                    {
+                        isNotNull = false;
+                    }                    
+                }
+
+                if (isNotNull)
+                {
+                    return ResultGameEnum.Draw;
+                }
+                else
+                {
+                    return ResultGameEnum.NotFinished;
+                }
+
+            }
+            catch (NullReferenceException)
+            {
+                return ResultGameEnum.NotFinished;                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return ResultGameEnum.NotFinished;
+            }
         }
     }
 }
