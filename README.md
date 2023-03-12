@@ -23,8 +23,8 @@ StatusCode: 200
 **входные параметры:**
 ```json
 {
-    "tableId":10,
-    "position":7
+    "tableId": id,
+    "position": int
 }
 ```
 
